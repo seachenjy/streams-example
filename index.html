@@ -5,32 +5,22 @@
 </head>
 <body>
 <script type="text/javascript">
-let total = null;
-let loaded = 0;
-const logProgress = (reader) => {
-    return reader.read().then(({ value, done }) => {
-        if (done) {
-            console.log('Download completed');
-            return;
-        }
-        
-        const decoder = new TextDecoder('utf-8');
-        console.log(decoder.decode(value, { stream: true }));
-        console.log("----------");
-        loaded += value.length;
-        if (total === null) {
-            console.log(`Downloaded ${loaded}`);
-        } else {
-            console.log(`Downloaded ${loaded} of ${total} (${(loaded / total * 100).toFixed(2)}%)`);
-        }
-        return logProgress(reader);
-    });
-};
-
 fetch('/string.txt').then((res) => {
-    total = res.headers.get('content-length');
-    return res.body.getReader();
-}).then(logProgress);
+    const decoder = new TextDecoderStream('utf-8', { ignoreBOM: true });
+    const textStream = res.body.pipeThrough(decoder);
+    const reader = textStream.getReader();
+    const findMatched = () => reader.read().then(({ value, done }) => {
+        if (done) {
+            console.log("done");
+            return false;
+        }
+        console.log(value);
+        console.log("--------");
+        return findMatched();
+    });
+    return findMatched();
+}).then((isMatched) => { 
+ });
 </script>
 </body>
 </html>
