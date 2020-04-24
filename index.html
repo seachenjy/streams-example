@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>streams-example</title>
+</head>
+<body>
+<script type="text/javascript">
+let total = null;
+let loaded = 0;
+const logProgress = (reader) => {
+    return reader.read().then(({ value, done }) => {
+        if (done) {
+            console.log('Download completed');
+            return;
+        }
+        
+        const decoder = new TextDecoder('utf-8');
+        console.log(decoder.decode(value, { stream: true }));
+        console.log("----------");
+        loaded += value.length;
+        if (total === null) {
+            console.log(`Downloaded ${loaded}`);
+        } else {
+            console.log(`Downloaded ${loaded} of ${total} (${(loaded / total * 100).toFixed(2)}%)`);
+        }
+        return logProgress(reader);
+    });
+};
+
+fetch('/string.txt').then((res) => {
+    total = res.headers.get('content-length');
+    return res.body.getReader();
+}).then(logProgress);
+</script>
+</body>
+</html>
