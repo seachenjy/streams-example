@@ -14,12 +14,14 @@ fetch('/string.txt').then((res) => {
             console.log("done");
             return false;
         }
-        console.log(value);
+        // console.log(value);
         console.log("--------");
         return findMatched();
     });
     return findMatched();
+    // console.log("...")
 }).then((isMatched) => { 
+    console.log(isMatched)
  });
 </script>
 </body>
