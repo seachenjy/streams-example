@@ -1,3 +1,10 @@
+<html>
+    <head>
+        <title>bytes</title>
+    </head>
+    <body>
+<script>
+
 //双字节
 let uintBuffer = new ArrayBuffer(4)
 let u16 = new DataView(uintBuffer)
@@ -6,13 +13,12 @@ let u16 = new DataView(uintBuffer)
 u16.setUint32(0,0x7FFFFFFF,false)
 
 //Failed to construct 'Blob': Iterator getter is not callable.
-var b = new Blob(["okokok"],{"type":"text/plain"})
+var b = new Blob([uintBuffer],{"type":"application/octet-stream"})
 
 var url = window.URL.createObjectURL(b);
-//获得值
-console.log(uintBuffer)
-downloadFileByBlob(url,"book.txt")
-function downloadFileByBlob(blobUrl :string, filename:string) {
+
+downloadFileByBlob(url,"book.sweet")
+function downloadFileByBlob(blobUrl , filename) {
   const eleLink = document.createElement('a')
   eleLink.download = filename
   eleLink.style.display = 'none'
@@ -23,3 +29,8 @@ function downloadFileByBlob(blobUrl :string, filename:string) {
   // 然后移除
   document.body.removeChild(eleLink)
 }
+
+</script>
+
+    </body>
+</html>
