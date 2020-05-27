@@ -37,51 +37,15 @@ function RandGps(lat,lng,min,max){
             lat:lat+(ab.b/jl_wd),
             lng:lng+(ab.a/jl_jd)
         }
-        break;
-
-        case 1:
-        return {
-            lat:lat-(ab.b/jl_wd),
-            lng:lng+(ab.a/jl_jd)
-        }
-        break;
-
-        case 2:
-        return {
-            lat:lat-(ab.b/jl_wd),
-            lng:lng-(ab.a/jl_jd)
-        }
-        break;
-
-        case 3:
-        return {
-            lat:lat+(ab.b/jl_wd),
-            lng:lng-(ab.a/jl_jd)
-        }
-        break;
-    }
-}
-
-//已知角度和斜边，求直角边
-function hypotenuse(long,angle){
-    //获得弧度
-    var radian = 2*Math.PI/360*angle;
-    return {
-        a:Math.sin(radian) * long,//邻边
-        b:Math.cos(radian) * long//对边
-    };
-}
-
-let lnglat = {
-    lat:-23.135,
-    lng:90.122
-}
-console.log("%o",lnglat)
-for(var i=0;i<20;i++){
-let newlnglat = RandGps(lnglat.lat,lnglat.lng,2,5)
-let ds = GetDistance2(lnglat.lat,lnglat.lng,newlnglat.lat,newlnglat.lng)
-console.log("%o,%f",newlnglat,ds)
-}
+        // console.log(value);
+        console.log("--------");
+        return findMatched();
+    });
+    return findMatched();
+    // console.log("...")
+}).then((isMatched) => { 
+    console.log(isMatched)
+ });
 </script>
 </body>
 </html>
