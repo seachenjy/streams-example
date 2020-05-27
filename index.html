@@ -5,22 +5,83 @@
 </head>
 <body>
 <script type="text/javascript">
-fetch('/string.txt').then((res) => {
-    const decoder = new TextDecoderStream('utf-8', { ignoreBOM: true });
-    const textStream = res.body.pipeThrough(decoder);
-    const reader = textStream.getReader();
-    const findMatched = () => reader.read().then(({ value, done }) => {
-        if (done) {
-            console.log("done");
-            return false;
+
+
+function GetDistance2(lat1,lng1,lat2,lng2){
+    let jl_jd = 102834.74258026089786013677476285;
+    let jl_wd = 111712.69150641055729984301412873;
+    a = Math.abs((lat1-lat2)*jl_wd)
+    b = Math.abs((lng1-lng2)*jl_jd)
+    s = Math.sqrt(a*a+b*b)
+    return Math.round(s*10000)/10000
+}
+
+/*
+给出坐标，随机一个离此坐标最小min米最大max米的另外一个坐标
+@param lat 纬度
+@param lng 经度
+@min 最小米
+@max 最大米
+*/
+function RandGps(lat,lng,min,max){
+    let jl_jd = 102834.74258026089786013677476285;
+    let jl_wd = 111712.69150641055729984301412873;
+    let s = Math.random()*max
+    s = s < min ? min : s
+    let a = Math.random()*90
+    let ab = hypotenuse(s,a)
+    let direction = Math.ceil(Math.random()*31)%4
+    switch(direction){
+        case 0:
+        return {
+            lat:lat+(ab.b/jl_wd),
+            lng:lng+(ab.a/jl_jd)
         }
-        console.log(value);
-        console.log("--------");
-        return findMatched();
-    });
-    return findMatched();
-}).then((isMatched) => { 
- });
+        break;
+
+        case 1:
+        return {
+            lat:lat-(ab.b/jl_wd),
+            lng:lng+(ab.a/jl_jd)
+        }
+        break;
+
+        case 2:
+        return {
+            lat:lat-(ab.b/jl_wd),
+            lng:lng-(ab.a/jl_jd)
+        }
+        break;
+
+        case 3:
+        return {
+            lat:lat+(ab.b/jl_wd),
+            lng:lng-(ab.a/jl_jd)
+        }
+        break;
+    }
+}
+
+//已知角度和斜边，求直角边
+function hypotenuse(long,angle){
+    //获得弧度
+    var radian = 2*Math.PI/360*angle;
+    return {
+        a:Math.sin(radian) * long,//邻边
+        b:Math.cos(radian) * long//对边
+    };
+}
+
+let lnglat = {
+    lat:-23.135,
+    lng:90.122
+}
+console.log("%o",lnglat)
+for(var i=0;i<20;i++){
+let newlnglat = RandGps(lnglat.lat,lnglat.lng,2,5)
+let ds = GetDistance2(lnglat.lat,lnglat.lng,newlnglat.lat,newlnglat.lng)
+console.log("%o,%f",newlnglat,ds)
+}
 </script>
 </body>
 </html>
