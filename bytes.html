@@ -3,31 +3,73 @@
         <title>bytes</title>
     </head>
     <body>
+        <input id="file_select" type="file" />
 <script>
+    //win
+    let file_handler = document.getElementById('file_select')
+    let reader = new FileReader()
 
-//双字节
-let uintBuffer = new ArrayBuffer(4)
-let u16 = new DataView(uintBuffer)
+    reader.onload = function(){
+        let uint8 = new Uint8Array(reader.result)
+        console.log(uint8)
+        
+        let base64 = uint8arrayToBase64(uint8)
+        let img = document.createElement("img")
+        img.src = base64
+        console.log(base64)
+        document.body.appendChild(img)
+    }
 
-//输入内容的位置、输入的值、是否使用小端方式(默认大端）
-u16.setUint32(0,0x7FFFFFFF,false)
+    file_handler.addEventListener('change',(event)=>{
+        if(file_handler.files.length > 0)
+        {
+            //判断文件类型
+            let _file = file_handler.files[0]
+            reader.readAsArrayBuffer(_file)
+            _filename = _file.name
+        }
+        file_handler = null
+    })
 
-//Failed to construct 'Blob': Iterator getter is not callable.
-var b = new Blob([uintBuffer],{"type":"application/octet-stream"})
+    function uint8arrayToBase64(u8Arr) {
+    let CHUNK_SIZE = 0x8000; //arbitrary number
+    let index = 0;
+    let length = u8Arr.length;
+    let result = '';
+    let slice;
+    while (index < length) {
+        slice = u8Arr.subarray(index, Math.min(index + CHUNK_SIZE, length));
+        result += String.fromCharCode.apply(null, slice);
+        index += CHUNK_SIZE;
+    }
+    // web image base64图片格式: "data:image/png;base64," + b64encoded;
+    return  "data:image/png;base64," + btoa(result);
+    // return btoa(result);
+}
+function getImgBase64(path, callback) {
+    var img = new Image();
+    img.src = path;
 
-var url = window.URL.createObjectURL(b);
+    //图片加载完成后触发
+    img.onload = function () {
+        var canvas = document.createElement("canvas");
+        //获取绘画上下文
+        ctx = canvas.getContext("2d");
 
-downloadFileByBlob(url,"book.sweet")
-function downloadFileByBlob(blobUrl , filename) {
-  const eleLink = document.createElement('a')
-  eleLink.download = filename
-  eleLink.style.display = 'none'
-  eleLink.href = blobUrl
-  // 触发点击
-  document.body.appendChild(eleLink)
-  eleLink.click()
-  // 然后移除
-  document.body.removeChild(eleLink)
+        // 获取图片宽高
+        var imgWidth = img.width;
+        var imgHeight = img.height;
+
+        //设置画布宽高与图片宽高相同
+        canvas.width = imgWidth;
+        canvas.height = imgHeight;
+
+        //绘制图片
+        ctx.drawImage(img, 0, 0, imgWidth, imgHeight);
+        //图片展示的 data URI
+        var dataUrl = canvas.toDataURL('image/jpeg');
+        callback ? callback(dataUrl) : '';
+    };
 }
 
 </script>
